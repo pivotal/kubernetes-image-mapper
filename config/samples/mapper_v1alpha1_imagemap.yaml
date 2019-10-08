@@ -1,7 +1,8 @@
 apiVersion: mapper.imagerelocation.pivotal.io/v1alpha1
 kind: ImageMap
 metadata:
-  name: imagemap-sample
+  name: bootcamp-sample
 spec:
-  # Add fields here
-  foo: bar
+  map:
+    - from: "gcr.io/google-samples/kubernetes-bootcamp:v1"
+      to: "<repo prefix>/kubernetes-bootcamp:v1"
