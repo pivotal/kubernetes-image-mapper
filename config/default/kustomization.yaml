@@ -1,12 +1,12 @@
 # Adds namespace to all resources.
-namespace: kubernetes-image-mapper-system
+namespace: image-mapper-system
 
 # Value of this field is prepended to the
 # names of all resources, e.g. a deployment named
 # "wordpress" becomes "alices-wordpress".
 # Note that it should also match with the prefix (text before '-') of the namespace
 # field above.
-namePrefix: kubernetes-image-mapper-
+namePrefix: image-mapper-
 
 # Labels to add to all resources and selectors.
 #commonLabels:

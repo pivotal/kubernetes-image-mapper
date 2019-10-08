@@ -17,25 +17,65 @@
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+type Maplet struct {
+	From string `json:"from"`
+	To   string `json:"to"`
+}
+
 // ImageMapSpec defines the desired state of ImageMap
 type ImageMapSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Map []Maplet `json:"map"`
 }
 
 // ImageMapStatus defines the observed state of ImageMap
 type ImageMapStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// ObservedGeneration records the ImageMap generation that the status reflects
+	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
+
+	// Conditions are observations about the state of the ImageMap
+	Conditions []Condition `json:"conditions"`
 }
 
+// Condition defines an observation about an ImageMap
+// See: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#typical-status-properties
+type Condition struct {
+	// Type is the type of condition
+	Type ConditionType `json:"type"`
+
+	// Status of the condition, one of True, False, Unknown
+	// +required
+	Status corev1.ConditionStatus `json:"status"`
+
+	// ObservationTime records when the condition was observed
+	ObservationTime metav1.Time `json:"observationTime,omitempty"`
+
+	// Message is a human readable description of the condition
+	// +optional
+	Message string `json:"message,omitempty"`
+}
+
+// ConditionType is a camel-cased condition type
+type ConditionType string
+
+const (
+	// ConditionReady specifies that the resource has been processed, regardless of the outcome
+	ConditionReady ConditionType = "Ready"
+)
+
 // +kubebuilder:object:root=true
+// +kubebuilder:subresource:status
 
 // ImageMap is the Schema for the imagemaps API
 type ImageMap struct {
