@@ -1,3 +1,7 @@
 version: "2"
 domain: imagerelocation.pivotal.io
 repo: github.com/pivotal/kubernetes-image-mapper
+resources:
+- group: mapper
+  version: v1alpha1
+  kind: ImageMap
