@@ -1,0 +1,7 @@
+apiVersion: mapper.imagerelocation.pivotal.io/v1alpha1
+kind: ImageMap
+metadata:
+  name: imagemap-sample
+spec:
+  # Add fields here
+  foo: bar

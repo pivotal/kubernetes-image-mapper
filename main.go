@@ -20,6 +20,8 @@ import (
 	"flag"
 	"os"
 
+	mapperv1alpha1 "github.com/pivotal/kubernetes-image-mapper/api/v1alpha1"
+	"github.com/pivotal/kubernetes-image-mapper/controllers"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
@@ -36,6 +38,7 @@ var (
 func init() {
 	_ = clientgoscheme.AddToScheme(scheme)
 
+	_ = mapperv1alpha1.AddToScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
 
@@ -59,6 +62,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err = (&controllers.ImageMapReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("ImageMap"),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ImageMap")
+		os.Exit(1)
+	}
 	// +kubebuilder:scaffold:builder
 
 	setupLog.Info("starting manager")
