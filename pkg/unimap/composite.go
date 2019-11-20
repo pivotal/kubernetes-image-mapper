@@ -16,7 +16,10 @@
 
 package unimap
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // Composite is an interface to a collection, indexed by namespace, of consistent mappings from string to string. The
 // mappings are consistent in the sense that no two mappings map a given pair to distinct results.
@@ -75,6 +78,10 @@ type relmap map[string]string
 // unimap have corresponding relocation mappings which a particular image reference to distinct values
 type unimap map[string]relmap
 
+const stoppedMsg = "composite is stopped"
+
+var stoppedErr = errors.New(stoppedMsg)
+
 type composite struct {
 	// a collection of unimaps indexed by namespace
 	mappings map[namespace]unimap
@@ -89,6 +96,8 @@ type composite struct {
 	stopCh   <-chan struct{}
 }
 
+// New creates a Composite and starts a monitor. When the given channel is closed, the monitor is stopped after which
+// all Composite methods return an error or no-op.
 func New(stopCh <-chan struct{}) Composite {
 	c := &composite{
 		mappings:  make(map[namespace]unimap),
@@ -106,7 +115,12 @@ func New(stopCh <-chan struct{}) Composite {
 	return c
 }
 
-func (c *composite) Add(namespace string, name string, mapping map[string]string) error {
+func (c *composite) Add(namespace string, name string, mapping map[string]string) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = stoppedErr
+		}
+	}()
 	errCh := make(chan error)
 	c.addCh <- &addOp{
 		namespace: namespace,
@@ -116,8 +130,12 @@ func (c *composite) Add(namespace string, name string, mapping map[string]string
 	}
 	return <-errCh
 }
-
-func (c *composite) Delete(namespace string, name string) error {
+func (c *composite) Delete(namespace string, name string) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = stoppedErr
+		}
+	}()
 	errCh := make(chan error)
 	c.deleteCh <- &deleteOp{
 		namespace: namespace,
@@ -127,7 +145,12 @@ func (c *composite) Delete(namespace string, name string) error {
 	return <-errCh
 }
 
-func (c *composite) Map(namespace string, value string) string {
+func (c *composite) Map(namespace string, value string) (result string) {
+	defer func() {
+		if r := recover(); r != nil {
+			result = value
+		}
+	}()
 	resultCh := make(chan string)
 	c.mapCh <- &mapOp{
 		namespace: namespace,
@@ -137,7 +160,12 @@ func (c *composite) Map(namespace string, value string) string {
 	return <-resultCh
 }
 
-func (c *composite) Dump() string {
+func (c *composite) Dump() (result string) {
+	defer func() {
+		if r := recover(); r != nil {
+			result = stoppedMsg
+		}
+	}()
 	resultCh := make(chan string)
 	c.dumpCh <- &dumpOp{
 		resultCh: resultCh,
@@ -164,6 +192,7 @@ func (c *composite) monitor() {
 			close(c.addCh)
 			close(c.deleteCh)
 			close(c.mapCh)
+			close(c.dumpCh)
 			return
 		}
 	}

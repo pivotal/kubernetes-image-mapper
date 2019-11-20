@@ -81,3 +81,15 @@ kubectl delete deployment kubernetes-bootcamp
 kubectl delete -f config/samples/mapper_v1alpha1_imagemap.yaml
 make deploy IMG=<some-registry>/<project-name>:tag
 ```
+
+## Testing
+
+The integration tests use the controller runtime
+[envtest](https://godoc.org/github.com/kubernetes-sigs/controller-runtime/pkg/envtest) package, so, before running the
+tests, install the control plane binaries (`etcd` and `kube-apiserver`) in `/usr/local/kubebuilder/bin`.
+This location can be overridden by setting the `KUBEBUILDER_ASSETS` environment variable.
+
+To run the unit and integration tests, issue:
+```
+$ make test
+```

@@ -197,32 +197,28 @@ var _ = Describe("Composite", func() {
 
 	Context("when the stop channel is closed", func() {
 		BeforeEach(func() {
+			mapping := map[string]string{testInput: testOutput}
+			Expect(comp.Add(testNamespace, "test", mapping)).To(Succeed())
 			close(stopCh)
 			stopped = true
 		})
 
-		It("should eventually panic on Add but function normally until then", func() {
-			Eventually(func() bool {
-				return panics(func() {
-					Expect(comp.Add(testNamespace, "test", map[string]string{})).To(Succeed())
-				})
-			}).Should(BeTrue())
+		It("should eventually return an error on Add but function normally until then", func() {
+			Eventually(func() error {
+				return comp.Add(testNamespace, "test", map[string]string{})
+			}).Should(MatchError("composite is stopped"))
 		})
 
-		It("should eventually panic on Delete but function normally until then", func() {
-			Eventually(func() bool {
-				return panics(func() {
-					Expect(comp.Delete(testNamespace, "test")).NotTo(Succeed())
-				})
-			}).Should(BeTrue())
+		It("should eventually return an error on Delete but function normally until then", func() {
+			Eventually(func() error {
+				return comp.Delete(testNamespace, "test")
+			}).Should(MatchError("composite is stopped"))
 		})
 
-		It("should eventually panic on Map but function normally until then", func() {
-			Eventually(func() bool {
-				return panics(func() {
-					Expect(comp.Map(testNamespace, testInput)).To(Equal(testInput))
-				})
-			}).Should(BeTrue())
+		It("should eventually act as the identity function on Map but function normally until then", func() {
+			Eventually(func() string {
+				return comp.Map(testNamespace, testInput)
+			}).Should(Equal(testInput))
 		})
 	})
 })
