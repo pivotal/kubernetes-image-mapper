@@ -14,7 +14,7 @@ endif
 all: manager
 
 # Run tests
-test: generate fmt vet manifests
+test: $(GOBIN)/ginkgo generate fmt vet manifests
 	go test ./... -coverprofile cover.out
 
 # Build manager binary
@@ -72,3 +72,6 @@ CONTROLLER_GEN=$(GOBIN)/controller-gen
 else
 CONTROLLER_GEN=$(shell which controller-gen)
 endif
+
+$(GOBIN)/ginkgo:
+	go get github.com/onsi/ginkgo/ginkgo@v1.10.3

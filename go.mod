@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/go-logr/logr v0.1.0
-	github.com/onsi/ginkgo v1.10.1
+	github.com/onsi/ginkgo v1.10.3
 	github.com/onsi/gomega v1.7.0
 	gomodules.xyz/jsonpatch/v2 v2.0.1
 	k8s.io/api v0.17.1
