@@ -83,7 +83,7 @@ func main() {
 	hookServer := mgr.GetWebhookServer()
 
 	setupLog.Info("registering webhook to the webhook server")
-	hookServer.Register("/image-relocation", &webhook.Admission{
+	hookServer.Register("/image-mapper", &webhook.Admission{
 		Handler: relocatingwebhook.NewLoggingWebhookHandler(relocatingwebhook.NewImageReferenceRelocator(comp), setupLog.WithName("handler"), debug),
 	})
 
