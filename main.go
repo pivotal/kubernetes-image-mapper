@@ -18,7 +18,9 @@ package main
 
 import (
 	"flag"
+	relocatingwebhook "github.com/pivotal/kubernetes-image-mapper/pkg/webhook"
 	"os"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"time"
 
 	mapperv1alpha1 "github.com/pivotal/kubernetes-image-mapper/api/v1alpha1"
@@ -76,6 +78,14 @@ func main() {
 
 	stopCh := ctrl.SetupSignalHandler()
 	comp := unimap.New(stopCh)
+
+	setupLog.Info("setting up webhook server")
+	hookServer := mgr.GetWebhookServer()
+
+	setupLog.Info("registering webhook to the webhook server")
+	hookServer.Register("/image-relocation", &webhook.Admission{
+		Handler: relocatingwebhook.NewLoggingWebhookHandler(relocatingwebhook.NewImageReferenceRelocator(comp), setupLog.WithName("handler"), debug),
+	})
 
 	setupLog.Info("creating controller", "controller", "ImageMap")
 	if err = (&controllers.ImageMapReconciler{
