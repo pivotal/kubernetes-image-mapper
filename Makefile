@@ -14,7 +14,7 @@ endif
 all: manager
 
 # Run tests
-test: generate fmt vet manifests
+test: $(GOBIN)/ginkgo generate fmt vet manifests
 	go test ./... -coverprofile cover.out
 
 # Build manager binary
@@ -67,8 +67,11 @@ docker-push:
 # download controller-gen if necessary
 controller-gen:
 ifeq (, $(shell which controller-gen))
-	go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.0
+	go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.4
 CONTROLLER_GEN=$(GOBIN)/controller-gen
 else
 CONTROLLER_GEN=$(shell which controller-gen)
 endif
+
+$(GOBIN)/ginkgo:
+	go get github.com/onsi/ginkgo/ginkgo@v1.10.3
