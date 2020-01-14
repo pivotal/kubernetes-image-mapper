@@ -1,7 +1,20 @@
-# Kubernetes Image Mapper
+# Kubernetes Image Mapper Prototype
 
-This consists of a MutatingAdmissionWebhook which rewrites kubernetes pods to use relocated image references.
-The mapping from original to relocated image references is built by deploying `imagemap` custom resources.
+The goal of this repository is to allow a kubernetes application to be deployed with images which
+have been moved to a private registry, but _without editing_ the application configuration. A webhook rewrites
+the image references in the application's pods according to a mapping which is configured using custom resources.
+
+To do:
+- [ ] Configure mutating admission webhook (see below)
+- [ ] Additional features - see [issues](https://github.com/pivotal/kubernetes-image-mapper/issues)
+
+For more context, please see the image relocation repository's [README](https://github.com/pivotal/image-relocation).
+
+## Details
+This repository consists of a MutatingAdmissionWebhook (under development - see below) which rewrites kubernetes pods to use relocated image
+references.
+The mapping from original to relocated image references is built by deploying `imagemap` custom resources
+which are processed by a controller also provided by this repository.
 
 Each `imagemap` is namespaced and applies only to pods in the same namespace.
 
@@ -12,7 +25,15 @@ short delay (currently one minute).
 
 If an `imagemap` is updated and this results in the `imagemap` being rejected, the original `imagemap` is undeployed.
 
-*TODO: the webhook has not yet been implemented*
+## **Webhook Unimplemented**
+
+The webhook is currently not implemented. Current status:
+
+* The webhook from an earlier spike is available [here](https://github.com/pivotal/image-relocation/pull/37).
+* The code is easy to integrate. See [draft PR 14](https://github.com/pivotal/kubernetes-image-mapper/pull/14).
+* The problem is configuring the webhook as the current configuration was generated using kubebuilder, is complex, and uses kustomize.
+
+See [issue 3](https://github.com/pivotal/kubernetes-image-mapper/issues/3) for more detail.
 
 ## Usage
 
@@ -50,6 +71,18 @@ prefix (e.g. `gcr.io/my-sandbox`) to which you and the cluster have access:
 kubectl apply -f config/samples/mapper_v1alpha1_imagemap.yaml
 ```
 
+* Observe the image map resources:
+```
+kubectl get imagemaps
+```
+Output:
+```
+NAME              AGE
+bootcamp-sample   1m
+```
+
+# Until the webhook is implemented (see above) the following instructions will do no good
+
 * Create a pod, e.g.:
 ```
 kubectl run kubernetes-bootcamp --image=gcr.io/google-samples/kubernetes-bootcamp:v1 --port=8080
@@ -72,12 +105,12 @@ Note: the `image` value under `containerStatuses` may not be the relocated value
 
 * View the logs from the webhook, e.g.:
 ```
-kubectl logs ir-webhook-xxx -n image-relocation
+kubectl logs image-mapper-controller-manager-xxx -n image-mapper-system
 ```
 
 * Now tidy up:
 ```
 kubectl delete deployment kubernetes-bootcamp
 kubectl delete -f config/samples/mapper_v1alpha1_imagemap.yaml
-make deploy IMG=<some-registry>/<project-name>:tag
+make undeploy IMG=<some-registry>/<project-name>:tag
 ```
