@@ -5,13 +5,12 @@ have been moved to a private registry, but _without editing_ the application con
 the image references in the application's pods according to a mapping which is configured using custom resources.
 
 To do:
-- [ ] Configure mutating admission webhook (see below)
 - [ ] Additional features - see [issues](https://github.com/pivotal/kubernetes-image-mapper/issues)
 
 For more context, please see the image relocation repository's [README](https://github.com/pivotal/image-relocation).
 
 ## Details
-This repository consists of a MutatingAdmissionWebhook (under development - see below) which rewrites kubernetes pods to use relocated image
+This repository consists of a MutatingAdmissionWebhook which rewrites kubernetes pods to use relocated image
 references.
 The mapping from original to relocated image references is built by deploying `imagemap` custom resources
 which are processed by a controller also provided by this repository.
@@ -24,16 +23,6 @@ After the inconsistency has been corrected, the rejected `imagemap` is automatic
 short delay (currently one minute).
 
 If an `imagemap` is updated and this results in the `imagemap` being rejected, the original `imagemap` is undeployed.
-
-## **Webhook Unimplemented**
-
-The webhook is currently not implemented. Current status:
-
-* The webhook from an earlier spike is available [here](https://github.com/pivotal/image-relocation/pull/37).
-* The code is easy to integrate. See [draft PR 14](https://github.com/pivotal/kubernetes-image-mapper/pull/14).
-* The problem is configuring the webhook as the current configuration was generated using kubebuilder, is complex, and uses kustomize.
-
-See [issue 3](https://github.com/pivotal/kubernetes-image-mapper/issues/3) for more detail.
 
 ## Usage
 
@@ -80,8 +69,6 @@ Output:
 NAME              AGE
 bootcamp-sample   1m
 ```
-
-# Until the webhook is implemented (see above) the following instructions will do no good
 
 * Create a pod, e.g.:
 ```
