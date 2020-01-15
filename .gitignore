@@ -22,3 +22,6 @@ bin
 *.swp
 *.swo
 *~
+
+# personal tilt settings
+tilt_option.json
