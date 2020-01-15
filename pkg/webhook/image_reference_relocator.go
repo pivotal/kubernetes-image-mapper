@@ -20,8 +20,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/pivotal/kubernetes-image-mapper/pkg/unimap"
 	"net/http"
+
+	"github.com/pivotal/kubernetes-image-mapper/pkg/unimap"
 
 	"gomodules.xyz/jsonpatch/v2"
 
@@ -33,6 +34,8 @@ import (
 )
 
 // +kubebuilder:webhook:verbs=create;update,path=/image-mapper,mutating=true,failurePolicy=fail,groups="",resources=pods,versions=v1,name=image-mapper.imagerelocation.pivotal.io
+
+const kubeSystemNamespace = "kube-system"
 
 type imageReferenceRelocator struct {
 	comp    unimap.Composite
@@ -56,6 +59,11 @@ func (i *imageReferenceRelocator) Handle(ctx context.Context, req admission.Requ
 	// Ignore non-pod resources.
 	if req.Resource != podResource {
 		return admission.Allowed(fmt.Sprintf("unexpected resource (not a pod): %v", req.Resource))
+	}
+
+	// Ignore kube-system pods.
+	if req.Namespace == kubeSystemNamespace {
+		return admission.Allowed(fmt.Sprintf("ignoring pod in %s namespace", kubeSystemNamespace))
 	}
 
 	rawPod := req.Object.Raw
