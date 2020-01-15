@@ -32,6 +32,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
+// +kubebuilder:webhook:verbs=create;update,path=/image-mapper,mutating=true,failurePolicy=fail,groups="",resources=pods,versions=v1,name=image-mapper.imagerelocation.pivotal.io
+
 type imageReferenceRelocator struct {
 	comp    unimap.Composite
 	client  client.Client
@@ -53,7 +55,7 @@ var (
 func (i *imageReferenceRelocator) Handle(ctx context.Context, req admission.Request) admission.Response {
 	// Ignore non-pod resources.
 	if req.Resource != podResource {
-		return admission.Patched(fmt.Sprintf("unexpected resource (not a pod): %v", req.Resource))
+		return admission.Allowed(fmt.Sprintf("unexpected resource (not a pod): %v", req.Resource))
 	}
 
 	rawPod := req.Object.Raw
@@ -90,7 +92,7 @@ func (i *imageReferenceRelocator) Handle(ctx context.Context, req admission.Requ
 	}
 
 	if !modified {
-		return admission.Patched("unmodified")
+		return admission.Allowed("unmodified")
 	}
 
 	updatedPodRaw, err := json.Marshal(pod)

@@ -76,7 +76,6 @@ const (
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-// +kubebuilder:webhook:verbs=create;update,path=/image-mapper,mutating=true,failurePolicy=fail,groups="",resources=pods,versions=v1,name=image-mapper.imagerelocation.pivotal.io
 
 // ImageMap is the Schema for the imagemaps API
 type ImageMap struct {
