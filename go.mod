@@ -7,10 +7,11 @@ require (
 	github.com/onsi/ginkgo v1.10.1
 	github.com/onsi/gomega v1.7.0
 	gomodules.xyz/jsonpatch/v2 v2.0.1
-	// equivalent of kubernetes-1.15.4 tag for each k8s.io repo except code-generator
-	k8s.io/api v0.0.0-20190918195907-bd6ac527cfd2
-	k8s.io/apimachinery v0.0.0-20190817020851-f2f3a405f61d
-	k8s.io/client-go v0.0.0-20190918200256-06eb1244587a
-	k8s.io/code-generator v0.0.0-20190612205613-18da4a14b22b
-	sigs.k8s.io/controller-runtime v0.3.0
+	k8s.io/api v0.17.1
+	k8s.io/apiextensions-apiserver v0.17.1 // indirect
+	k8s.io/apimachinery v0.17.1
+	k8s.io/client-go v0.17.1
+	k8s.io/code-generator v0.17.1
+	sigs.k8s.io/controller-runtime v0.4.0
+	sigs.k8s.io/controller-tools v0.2.4 // indirect
 )
