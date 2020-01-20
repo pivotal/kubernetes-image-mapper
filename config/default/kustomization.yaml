@@ -10,6 +10,7 @@ namePrefix: image-mapper-
 
 # Labels to add to all resources and selectors.
 commonLabels:
+  # prevent the webhook attempting to mutate its own pod (and deadlocking)
   image-mapper-webhook.image-relocation.pivotal.io/enabled: "false"
 
 bases:
