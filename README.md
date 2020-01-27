@@ -31,8 +31,7 @@ The following was tested using a GKE cluster.
 * Install Jetstack certificate manager:
 ```
 kubectl create namespace cert-manager && \
-kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true && \
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.10.1/cert-manager.yaml
+kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.12.0/cert-manager.yaml
 ```
 
 * If you want the controller and webhook to provide detailed logs, enable debug logging in the currently active patch
@@ -100,4 +99,5 @@ kubectl logs image-mapper-controller-manager-xxx -n image-mapper-system
 kubectl delete deployment kubernetes-bootcamp
 kubectl delete -f config/samples/mapper_v1alpha1_imagemap.yaml
 make undeploy IMG=<some-registry>/<project-name>:tag
+kubectl delete -f https://github.com/jetstack/cert-manager/releases/download/v0.12.0/cert-manager.yaml
 ```
