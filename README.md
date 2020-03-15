@@ -101,3 +101,20 @@ kubectl delete -f config/samples/mapper_v1alpha1_imagemap.yaml
 make undeploy IMG=<some-registry>/<project-name>:tag
 kubectl delete -f https://github.com/jetstack/cert-manager/releases/download/v0.12.0/cert-manager.yaml
 ```
+
+## Tilt
+
+If you prefer to use [tilt](https://tilt.dev/) for development, create a file in the root of this repository called
+`tilt_option.json` (ignored by git) with contents similar to the following example:
+```
+{
+  "allowed_k8s_context": "my-personal-cluster",
+  "default_registry": "gcr.io/my-personal-project"
+}
+```
+
+Follow the instructions above, but to build and deploy the webhook, simply run `tilt up`
+in the root of this repository. If you make changes to the code, they will be synchronised
+to the cluster and built there after which the running container will be updated.
+
+To undeploy the webhook, stop tilt using ctrl+c, then run `tilt down`.
