@@ -4,6 +4,8 @@ metadata:
   name: mutating-webhook-configuration
 webhooks:
   - name: image-mapper.imagerelocation.pivotal.io
+    reinvocationPolicy: IfNeeded
+    matchPolicy: Equivalent
     namespaceSelector:
       matchExpressions:
         # avoid mutating pods in namespaces which are explicitly disabled
